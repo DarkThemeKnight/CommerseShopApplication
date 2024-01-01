@@ -24,14 +24,12 @@ public class ApplicationUserController {
         String result = applicationUserService.updatePassword(jwtToken, newPassword);
         return ResponseEntity.ok(result);
     }
-
     @PutMapping("/phoneNumber")
     public ResponseEntity<String> updatePhoneNumber(@RequestHeader("Authorization") String authorizationHeader, @RequestParam String phoneNumber) {
         String jwtToken = jwtService.extractTokenFromHeader(authorizationHeader);
         String result = applicationUserService.updatePhoneNumber(jwtToken, phoneNumber);
         return ResponseEntity.ok(result);
     }
-
     @PutMapping("/security")
     public ResponseEntity<String> updateSecurityQuestion(
             @RequestHeader("Authorization") String authorizationHeader,

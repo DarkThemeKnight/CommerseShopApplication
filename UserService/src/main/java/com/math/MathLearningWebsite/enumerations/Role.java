@@ -1,6 +1,7 @@
 package com.math.MathLearningWebsite.enumerations;
 
 public enum Role {
+    SUPER_ADMIN,
     ADMIN,
     MERCHANT,
     CUSTOMER,
@@ -9,4 +10,5 @@ public enum Role {
     ANALYTICS,
     FINANCIAL,
     SHIPPING_LOGISTICS
+
 }

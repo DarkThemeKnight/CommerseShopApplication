@@ -3,6 +3,7 @@ package com.math.MathLearningWebsite.enumerations;
 public enum Message {
     USER_NOT_FOUND("User not found."),
     INVALID_CREDENTIALS("Invalid credentials provided."),
+    EXPIRED_CREDENTIALS("Credentials are expired"),
     ACCOUNT_LOCKED("Your account has been locked. Please contact support."),
     PASSWORD_RESET_SUCCESS("Password reset successful."),
     PASSWORD_RESET_LINK_EXPIRED("The password reset link has expired."),

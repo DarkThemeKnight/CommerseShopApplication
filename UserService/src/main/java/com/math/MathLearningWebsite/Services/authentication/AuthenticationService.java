@@ -79,6 +79,7 @@ public class AuthenticationService {
             return new AuthenticationResponse(null,
                     Message.INVALID_CREDENTIALS.getMessage());
         }
+        if (!user.isAccountNonExpired()) return new AuthenticationResponse(null,Message.ACCOUNT_LOCKED.getMessage());
         if (!user.isCredentialsNonExpired()){
             user.setCredentialsNonExpired(true);
             user = applicationUserDao.save(user);
