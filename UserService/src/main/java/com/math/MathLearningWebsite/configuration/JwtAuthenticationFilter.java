@@ -1,5 +1,5 @@
 package com.math.MathLearningWebsite.configuration;
-import com.math.MathLearningWebsite.Services.previleges.customer.ApplicationUserService;
+import com.math.MathLearningWebsite.Services.previleges.users.ApplicationUserService;
 import com.math.MathLearningWebsite.Services.Jwt.JwtService;
 import com.math.MathLearningWebsite.entity.ApplicationUser;
 import jakarta.servlet.FilterChain;

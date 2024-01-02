@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/user/auth/v1")
+@RequestMapping("/user/auth/api/v1")
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
     private final JwtService jwtService;

@@ -1,7 +1,6 @@
 package com.math.MathLearningWebsite.Services.previleges.admin;
 
-import com.math.MathLearningWebsite.Services.previleges.customer.ApplicationUserService;
-import com.math.MathLearningWebsite.Services.Jwt.JwtService;
+import com.math.MathLearningWebsite.Services.previleges.users.ApplicationUserService;
 import com.math.MathLearningWebsite.dao.ApplicationUserDao;
 import com.math.MathLearningWebsite.entity.ApplicationUser;
 import com.math.MathLearningWebsite.enumerations.Message;
@@ -10,22 +9,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Service
 public class AdminService {
     private final ApplicationUserService userService;
     private final ApplicationUserDao userDao;
-    private final JwtService jwtService;
+
     @Autowired
-    public AdminService(ApplicationUserService userService, ApplicationUserDao userDao, JwtService jwtService) {
+    public AdminService(ApplicationUserService userService, ApplicationUserDao userDao) {
         this.userService = userService;
         this.userDao = userDao;
-        this.jwtService = jwtService;
+
     }
 
-    private String lockUserAccount(String email){
+    public String lockUserAccount(String email){
         ApplicationUser user;
         try {
               user= userService.loadUserByUsername(email);
@@ -39,7 +35,7 @@ public class AdminService {
         userDao.save(user);
         return "Success";
     }
-    private String unlockUserAccount(String email){
+    public String unlockUserAccount(String email){
             ApplicationUser user;
             try {
                 user= userService.loadUserByUsername(email);
@@ -53,7 +49,7 @@ public class AdminService {
             userDao.save(user);
             return "Success";
     }
-    private String deleteAccount(String email){
+    public String deleteAccount(String email){
         ApplicationUser user;
         try {
             user= userService.loadUserByUsername(email);
@@ -66,12 +62,11 @@ public class AdminService {
         userDao.deleteById(user.getUserId());
         return "Success";
     }
-    private String updateRole(String email, Role role){
+    public String updateRole(String email, Role role){
         if (role == null){
             return "No null parameters";
         }
         ApplicationUser user;
-            user= userService.loadUserByUsername(email);
             try {
                 user= userService.loadUserByUsername(email);
                 if (role == Role.SUPER_ADMIN || role == Role.ADMIN || user.getUserAuthorities() == Role.ADMIN || user.getUserAuthorities() == Role.SUPER_ADMIN){
@@ -84,8 +79,5 @@ public class AdminService {
             userDao.save(user);
             return "Success";
     }
-
-
-
 
 }

@@ -1,4 +1,4 @@
-package com.math.MathLearningWebsite.Services.previleges.customer;
+package com.math.MathLearningWebsite.Services.previleges.users;
 
 import com.math.MathLearningWebsite.Services.Jwt.JwtService;
 import com.math.MathLearningWebsite.dao.ApplicationUserDao;

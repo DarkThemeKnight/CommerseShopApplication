@@ -1,7 +1,6 @@
 package com.math.MathLearningWebsite.configuration;
 
-import com.math.MathLearningWebsite.Services.previleges.customer.ApplicationUserService;
-import com.math.MathLearningWebsite.enumerations.Role;
+import com.math.MathLearningWebsite.Services.previleges.users.ApplicationUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

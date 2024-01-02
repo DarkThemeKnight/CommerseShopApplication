@@ -1,4 +1,5 @@
 package com.math.MathLearningWebsite.Services.authentication;
+import com.google.common.util.concurrent.RateLimiter;
 import com.math.MathLearningWebsite.Services.Jwt.JwtService;
 import com.math.MathLearningWebsite.dao.ApplicationUserDao;
 import com.math.MathLearningWebsite.entity.ApplicationUser;
@@ -13,10 +14,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 @Slf4j
 @Service
 public class AuthenticationService {
+    private final RateLimiter rateLimiter = RateLimiter.create(1);
     private final ApplicationUserDao applicationUserDao;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -29,47 +32,59 @@ public class AuthenticationService {
         this.jwtService = jwtService;
     }
 
-    public AuthenticationResponse registerUser(AuthenticationRequest request){
-        if (request == null || request.getEmail() == null || request.getPassword() == null
-        || request.getLastName() == null || request.getAddress() == null ||
-        request.getSecurityAnswer() == null || request.getSecurityQuestion() == null
-        || request.getFirstName() == null || request.getPhoneNumber() == null) {
+    public AuthenticationResponse registerUser(AuthenticationRequest request) {
+        if (!rateLimiter.tryAcquire()){
+            return new AuthenticationResponse(null, "Too many requests. Please try again later.");
+        }
+        if (invalidCredentials(request)) {
             return new AuthenticationResponse(null, Message.INVALID_CREDENTIALS.getMessage());
         }
+
         if (!UsernamePasswordChecking.isValidEmail(request.getEmail())) {
-            return new AuthenticationResponse(null,Message.INVALID_EMAIL.getMessage());
+            return new AuthenticationResponse(null, Message.INVALID_EMAIL.getMessage());
         }
-        else if (!UsernamePasswordChecking.isValidPassword(request.getPassword())){
-            return new AuthenticationResponse(null,
-                    Message.PASSWORD_WEAK.getMessage());
+        if (!UsernamePasswordChecking.isValidPassword(request.getPassword())) {
+            return new AuthenticationResponse(null, Message.PASSWORD_WEAK.getMessage());
         }
-        ApplicationUser userIfExists = applicationUserDao
-                .findByEmail(request.getEmail()).orElse(null);
-        if (userIfExists != null){
-            return new AuthenticationResponse(null,
-                    Message.USER_EXISTS.getMessage());
+        Optional<ApplicationUser> userIfExists = applicationUserDao.findByEmail(request.getEmail());
+        if (userIfExists.isPresent()) {
+            return new AuthenticationResponse(null, Message.USER_EXISTS.getMessage());
         }
-        else {
-            ApplicationUser toSave = ApplicationUser.builder()
-                    .email(request.getEmail())
-                    .password(passwordEncoder.encode(request.getPassword()))
-                    .firstName(request.getFirstName())
-                    .lastName(request.getLastName())
-                    .phoneNumber(request.getPhoneNumber())
-                    .address(request.getAddress())
-                    .securityQuestion(request.getSecurityQuestion())
-                    .securityAnswer(request.getSecurityAnswer())
-                    .userAuthorities(Role.CUSTOMER)
-                    .isAccountNonLocked(true)
-                    .isEnabled(true)
-                    .isCredentialsNonExpired(true)
-                    .isAccountNonExpired(true)
-                    .build();
-            ApplicationUser response = applicationUserDao.save(toSave);
-            String token = jwtService.generate(new HashMap<>(),response);
-            return new AuthenticationResponse(token);
-        }
+        ApplicationUser toSave = buildUserFromRequest(request);
+        ApplicationUser response = applicationUserDao.save(toSave);
+        String token = jwtService.generate(new HashMap<>(), response);
+        return new AuthenticationResponse(token);
     }
+    private boolean invalidCredentials(AuthenticationRequest request) {
+        return request == null ||
+                request.getEmail() == null ||
+                request.getPassword() == null ||
+                request.getLastName() == null ||
+                request.getAddress() == null ||
+                request.getSecurityAnswer() == null ||
+                request.getSecurityQuestion() == null ||
+                request.getFirstName() == null ||
+                request.getPhoneNumber() == null;
+    }
+
+    private ApplicationUser buildUserFromRequest(AuthenticationRequest request) {
+        return ApplicationUser.builder()
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .phoneNumber(request.getPhoneNumber())
+                .address(request.getAddress())
+                .securityQuestion(request.getSecurityQuestion())
+                .securityAnswer(request.getSecurityAnswer())
+                .userAuthorities(Role.CUSTOMER)
+                .isAccountNonLocked(true)
+                .isEnabled(true)
+                .isCredentialsNonExpired(true)
+                .isAccountNonExpired(true)
+                .build();
+    }
+
     public AuthenticationResponse loginUser(AuthenticationRequest request) {
         if (!UsernamePasswordChecking.isValidEmail(request.getEmail())){
             return new AuthenticationResponse(null, Message.INVALID_EMAIL.getMessage());

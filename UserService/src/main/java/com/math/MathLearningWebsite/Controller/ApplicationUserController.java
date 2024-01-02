@@ -1,14 +1,14 @@
 package com.math.MathLearningWebsite.Controller;
 
 import com.math.MathLearningWebsite.Services.Jwt.JwtService;
-import com.math.MathLearningWebsite.Services.previleges.customer.ApplicationUserService;
+import com.math.MathLearningWebsite.Services.previleges.users.ApplicationUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/user/control/v1")
+@RequestMapping("/user/api/v1")
 public class ApplicationUserController {
     private final JwtService jwtService;
     private final ApplicationUserService applicationUserService;
